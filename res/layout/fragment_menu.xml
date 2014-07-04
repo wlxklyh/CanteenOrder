@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/light_gray" >
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        
+        android:layout_alignParentTop="true" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/menu_user_bg"
+                android:orientation="horizontal"
+                android:padding="20dp" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/avatar_default" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="10dp"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="4dp"
+                        android:text="客户名字"
+                        android:textColor="@color/black" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="2dp"
+                        android:text="使用次数：3"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+            <RelativeLayout style="@style/menuItem" >
+                <ImageView
+                    android:id="@+id/iv_transfer"
+                    style="@style/menuItemIcon"
+                    android:src="@drawable/icon_transfer" />
+                <TextView
+                    style="@style/menuItemTitle"
+                    android:layout_toRightOf="@id/iv_transfer"
+                    android:text="历史餐厅" />
+            </RelativeLayout>
+
+            <RelativeLayout style="@style/menuItem" >
+
+                <ImageView
+                    android:id="@+id/iv_history"
+                    style="@style/menuItemIcon"
+                    android:src="@drawable/icon_history" />
+
+                <TextView
+                    style="@style/menuItemTitle"
+                    android:layout_toRightOf="@id/iv_history"
+                    android:text="历史订单" />
+            </RelativeLayout>
+
+            <RelativeLayout style="@style/menuItem" >
+
+                <ImageView
+                    android:id="@+id/iv_connect"
+                    style="@style/menuItemIcon"
+                    android:src="@drawable/icon_connect" />
+
+                <TextView
+                    style="@style/menuItemTitle"
+                    android:layout_toRightOf="@id/iv_connect"
+                    android:text="版本更新" />
+            </RelativeLayout>
+
+            <RelativeLayout style="@style/menuItem" >
+
+                <ImageView
+                    android:id="@+id/iv_reward"
+                    style="@style/menuItemIcon"
+                    android:src="@drawable/icon_reward" />
+
+                <TextView
+                    style="@style/menuItemTitle"
+                    android:layout_toRightOf="@id/iv_reward"
+                    android:text="关于我们" />
+            </RelativeLayout>
+
+            <RelativeLayout style="@style/menuItem" >
+
+                <ImageView
+                    android:id="@+id/iv_setting"
+                    style="@style/menuItemIcon"
+                    android:src="@drawable/icon_setting" />
+
+                <TextView
+                    style="@style/menuItemTitle"
+                    android:layout_toRightOf="@id/iv_setting"
+                    android:text="设置" />
+            </RelativeLayout>
+            <RelativeLayout style="@style/menuItem" >
+
+                <ImageView
+                    android:id="@+id/iv_logout"
+                    style="@style/menuItemIcon"
+                    android:src="@drawable/icon_logout" />
+
+                <TextView
+                    style="@style/menuItemTitle"
+                    android:layout_toRightOf="@id/iv_logout"
+                    android:text="建议反馈" />
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>
