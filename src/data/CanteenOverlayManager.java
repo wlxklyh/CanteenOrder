@@ -51,13 +51,10 @@ public class CanteenOverlayManager {
 		for(int i=0;i<driverList.size();i++)
 		{
 			OverlayItem tempoverlayItem = new OverlayItem(driverList.get(i).cantteenLoca, "item1", "item1");
-			
 			canteenOverlayItemList.add(tempoverlayItem);
-			
 			View layoutView = LayoutInflater.from(context).inflate(R.layout.canteen_overlay,
 					null);
 			Bitmap bm = convertViewToBitMap(layoutView);
-			
 			bm=small(bm);
 			BitmapDrawable bd = new BitmapDrawable(bm);
 			tempoverlayItem.setMarker(bd);
