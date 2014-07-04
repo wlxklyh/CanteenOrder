@@ -15,6 +15,7 @@
         android:background="@drawable/title_bar_bg" >
 
         <TextView
+            android:textSize="20sp"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
             android:layout_width="wrap_content"

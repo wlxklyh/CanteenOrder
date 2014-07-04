@@ -3,9 +3,11 @@
     package="com.example.canteenorder"
     android:versionCode="1"
     android:versionName="1.0" >
+
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="19" />
+
     <uses-permission android:name="android.permission.INTERNET" >
     </uses-permission>
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" >
@@ -27,8 +29,10 @@
     <uses-permission android:name="android.permission.CALL_PHONE" >
     </uses-permission>
     <uses-permission android:name="android.permission.SEND_SMS" />
+
     <permission android:name="android.permission.BAIDU_LOCATION_SERVICE" >
     </permission>
+
     <uses-permission android:name="android.permission.BAIDU_LOCATION_SERVICE" >
     </uses-permission>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" >
@@ -36,12 +40,14 @@
     <uses-permission android:name="android.permission.ACCES_MOCK_LOCATION" >
     </uses-permission>
     <uses-permission android:name="android.permission.ACCESS_GPS" />
+
     <supports-screens
         android:anyDensity="true"
         android:largeScreens="true"
         android:normalScreens="false"
         android:resizeable="true"
         android:smallScreens="true" />
+
     <application
         android:name="data.Location"
         android:allowBackup="true"
@@ -56,6 +62,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="ui.activity.CanteenActivity"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name="ui.activity.OderInfoActivity"
+            android:label="@string/app_name" >
+        </activity>
+
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"

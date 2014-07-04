@@ -79,7 +79,16 @@ public class MainActivity extends ActionBarActivity {
 		init();
 		inti_canteen_info_handler.sendEmptyMessage(0);
 		mCanteenOverlayManager = new CanteenOverlayManager(mContext,mMapView);
-
+		mCanteenOverlayManager.addCanteen(new GeoPoint((int) (23.06202 * 1E6),
+				(int) (113.398128 * 1E6)), R.layout.layout_canteen,R.drawable.icon_canteen1, "73街");
+		
+		mCanteenOverlayManager.addCanteen(new GeoPoint((int) (23.06292 * 1E6),
+				(int) (113.398428 * 1E6)),R.layout.layout_canteen,R.drawable.icon_canteen2,  "台湾牛肉面");
+		
+		mCanteenOverlayManager.addCanteen(new GeoPoint((int) (23.06692 * 1E6),
+				(int) (113.399428 * 1E6)),R.layout.layout_canteen,R.drawable.icon_canteen3, "手工水饺");
+		
+		
 	}
 
 	@Override
@@ -232,7 +241,6 @@ public class MainActivity extends ActionBarActivity {
 		option.setTimeOut(5000);
 		mLocClient.setLocOption(option);
 	}
-
 
 	// 常用事件监听，用来处理通常的网络错误，授权验证错误等
 	class MyGeneralListener implements MKGeneralListener {

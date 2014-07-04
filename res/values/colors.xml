@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <resources>
+<color name="font_title">#444444</color>
 <color name="transparency">#00000000</color>
 <color name="shadow">#1e000000</color>
 <color name="light_gray">#ffebebeb</color>

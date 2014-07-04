@@ -3,30 +3,32 @@
     android:layout_width="100dp"
     android:layout_height="50dp"
     android:background="@drawable/canteenlayout_bg" >
+
     <ImageView
-        android:id="@+id/canteen_icon"
+        android:id="@+id/imageView_canteen_icon"
         android:layout_width="33dp"
         android:layout_height="33dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginLeft="2dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="5dp"
         android:background="@drawable/icon_canteen1" />
+
     <TextView
         android:id="@+id/canteen_phone_text"
         android:layout_width="100dp"
-        android:layout_height="10dp"
+        android:layout_height="wrap_content"
         android:text="电话：13570233448"
         android:gravity="center"
         android:textSize="10sp"
         android:textColor="@color/snow"
-        android:layout_below="@+id/canteen_icon"/>
+        android:layout_below="@+id/imageView_canteen_icon"/>
     <TextView
         android:id="@+id/canteen_name_text"
         android:layout_width="match_parent"
-        android:layout_height="25dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:layout_toRightOf="@+id/canteen_icon"
+        android:layout_toRightOf="@+id/imageView_canteen_icon"
         android:gravity="center"
         android:text="72街"
         android:textColor="@color/lightsalmon"
-        android:textSize="25sp" />
+        android:textSize="15sp" />
 </RelativeLayout>

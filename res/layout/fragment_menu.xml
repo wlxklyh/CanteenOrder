@@ -93,7 +93,6 @@
                     android:id="@+id/iv_reward"
                     style="@style/menuItemIcon"
                     android:src="@drawable/icon_reward" />
-
                 <TextView
                     style="@style/menuItemTitle"
                     android:layout_toRightOf="@id/iv_reward"
@@ -106,7 +105,6 @@
                     android:id="@+id/iv_setting"
                     style="@style/menuItemIcon"
                     android:src="@drawable/icon_setting" />
-
                 <TextView
                     style="@style/menuItemTitle"
                     android:layout_toRightOf="@id/iv_setting"
@@ -118,7 +116,6 @@
                     android:id="@+id/iv_logout"
                     style="@style/menuItemIcon"
                     android:src="@drawable/icon_logout" />
-
                 <TextView
                     style="@style/menuItemTitle"
                     android:layout_toRightOf="@id/iv_logout"
