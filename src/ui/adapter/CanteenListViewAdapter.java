@@ -108,7 +108,7 @@ public class CanteenListViewAdapter extends BaseAdapter {
 		
 		mViewHolder.titleTextView.setText(mFoodInfoList.get(position).name);
 		mViewHolder.contentTextView
-				.setText(mFoodInfoList.get(position).content);
+				.setText(mFoodInfoList.get(position).introduce);
 		mViewHolder.saleTextView.setText(""
 				+ mFoodInfoList.get(position).monthSale);
 		mViewHolder.priceTextView.setText(""

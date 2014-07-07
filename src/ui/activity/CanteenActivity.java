@@ -1,7 +1,24 @@
 package ui.activity;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import ui.adapter.CanteenListViewAdapter;
 import ui.adapter.CanteenViewpagerAdapter;
@@ -17,6 +34,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -24,7 +42,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class CanteenActivity extends Activity {
-
+	private int mFoodIconR[]=new int[20];
+	private int mFoodNum=0;
 	private Context mContext;
 	private ViewPager mAdsViewPager;
 	private ListView mFoodListView;
@@ -32,26 +51,136 @@ public class CanteenActivity extends Activity {
 	private CanteenListViewAdapter mCanteenListViewAdapter;
 	private CanteenViewpagerAdapter mCanteenViewpagerAdapter;
 
-	private List<FoodInfo> foodInfoList = new ArrayList<FoodInfo>();
+	public static List<FoodInfo> foodInfoList = new ArrayList<FoodInfo>();
 
+	private String mCanteenPhone;
+	private String mTitleStr;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mContext = this;
 		setContentView(R.layout.activity_canteen);
 
+		mFoodIconR[0]=R.drawable.icon_food1;
+		mFoodIconR[1]=R.drawable.icon_food2;
+		mFoodIconR[2]=R.drawable.icon_food3;
+		mFoodIconR[3]=R.drawable.icon_food4;
+		mFoodIconR[4]=R.drawable.icon_food5;
+		mFoodIconR[5]=R.drawable.icon_food6;
+		mFoodIconR[6]=R.drawable.icon_food7;
+		mFoodIconR[7]=R.drawable.icon_food8;
+		mFoodIconR[8]=R.drawable.icon_food9;
+		mFoodIconR[9]=R.drawable.icon_food10;
+		mFoodIconR[10]=R.drawable.icon_food11;
+		mFoodIconR[11]=R.drawable.icon_food12;
+		
+		
 		// 进来初始化
 		Intent intent = getIntent();
-		String titleStr = intent.getStringExtra("name");
-		TextView titleTextView = (TextView) findViewById(R.id.button_title);
-		titleTextView.setText(titleStr);
-		titleTextView.setTextSize(25);
-
+		mTitleStr = intent.getStringExtra("name");
+		mCanteenPhone = intent.getStringExtra("phone");
 		mFindViewByID();
-		initData();
-		setData();
+		
+		
+		TextView titleTextView = (TextView) findViewById(R.id.button_title);
+		titleTextView.setText(mTitleStr);
+		titleTextView.setTextSize(25);
+		
+		new Thread() {
+			public void run() {
+				StringBuilder sb = new StringBuilder();
+				HttpClient client = new DefaultHttpClient();
+				HttpParams httpParams = client.getParams();
+				HttpConnectionParams.setConnectionTimeout(httpParams, 3000);
+				HttpConnectionParams.setSoTimeout(httpParams, 5000);
+				HttpResponse response = null;
+				try {
+					response = client.execute(new HttpGet(LoginActivity.HTTPHOST + "m=json&a=foodlist&canteenPhone="+mCanteenPhone));
+					Log.d("lyh", LoginActivity.HTTPHOST + "m=json&a=foodlist&canteenPhone="+mCanteenPhone);
+				} catch (ClientProtocolException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				if (response == null) {
+					inti_food_info_handler.sendEmptyMessage(0);
+					return;
+				}
+				HttpEntity entity = response.getEntity();
+				Log.d("lyh", "1");
+				if (entity != null) {
+					BufferedReader reader = null;
+					try {
+						reader = new BufferedReader(new InputStreamReader(
+								entity.getContent(), "UTF-8"), 8192);
+					} catch (UnsupportedEncodingException e) {
+						e.printStackTrace();
+					} catch (IllegalStateException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					String line = null;
+					try {
+						while ((line = reader.readLine()) != null) {
+							sb.append(line + "\n");
+						}
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					try {
+						reader.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				String result = sb.toString();
+				Log.d("lyh", result);
+				JSONArray jsonArr = null;
+				try {
+					jsonArr = new JSONArray(sb.toString());
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				JSONObject obj = null;
+				try {
+					for (int i = 0; i < jsonArr.length(); i++) {
+						obj = jsonArr.getJSONObject(i);
+						FoodInfo food = new FoodInfo();
+						food.canteenPhone=(String) obj.get("canteenPhone");
+						food.name=(String) obj.get("name");
+						food.foodId=(int) obj.get("foodId");
+						food.introduce=(String) obj.get("introduce");
+						food.monthSale=(int) obj.get("monthSale");
+						food.price=Double.valueOf(obj.get("price").toString());
+						food.starNum=(int) obj.get("starNum");
+						food.iconResource = mFoodIconR[(mFoodNum++)%12];
+						foodInfoList.add(food);
+					}
+					
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				inti_food_info_handler.sendEmptyMessage(0);
+			}
+		}.start();
+		
 	}
 
+	
+	public Handler inti_food_info_handler = new Handler(){
+		@Override
+		public void handleMessage(Message msg) {
+			
+			initData();
+			setData();
+			
+		}
+	};
 	private void mFindViewByID() {
 		mFoodListView = (ListView) findViewById(R.id.listView_food);
 		mAdsViewPager = (ViewPager) findViewById(R.id.ads_viewpager);
@@ -60,56 +189,8 @@ public class CanteenActivity extends Activity {
 	private void initData() {
 		mCanteenListViewAdapter = new CanteenListViewAdapter(mContext);
 		mCanteenViewpagerAdapter = new CanteenViewpagerAdapter(mContext);
-		foodInfoList
-				.add(new FoodInfo(true, "酸菜卤肉饭套餐",
-						"肉酥透，肥而不腻，浓卤汁包裹着肉块，色泽诱人，加上酸菜甜酸适中，令人胃口大开。这是非常好的下饭菜", 5,
-						24, 20.0,R.drawable.icon_food1));
-		foodInfoList
-				.add(new FoodInfo(true, "凉瓜排骨饭 ",
-						"肉酥透，肥而不腻，浓卤汁包裹着肉块，色泽诱人，加上酸菜甜酸适中，令人胃口大开。这是非常好的下饭菜", 5,
-						24, 20.0,R.drawable.icon_food2));
-		foodInfoList
-				.add(new FoodInfo(true, "五香卤肉饭 ",
-						"肉酥透，肥而不腻，浓卤汁包裹着肉块，色泽诱人，加上酸菜甜酸适中，令人胃口大开。这是非常好的下饭菜", 5,
-						24, 20.0,R.drawable.icon_food3));
-		foodInfoList
-				.add(new FoodInfo(true, "啤酒鸭饭",
-						"肉酥透，肥而不腻，浓卤汁包裹着肉块，色泽诱人，加上酸菜甜酸适中，令人胃口大开。这是非常好的下饭菜", 5,
-						24, 20.0,R.drawable.icon_food4));
-		foodInfoList
-				.add(new FoodInfo(true, "红烧牛腩",
-						"肉酥透，肥而不腻，浓卤汁包裹着肉块，色泽诱人，加上酸菜甜酸适中，令人胃口大开。这是非常好的下饭菜", 5,
-						24, 20.0,R.drawable.icon_food5));
-		foodInfoList
-				.add(new FoodInfo(true, "豆角炒肉 ",
-						"肉酥透，肥而不腻，浓卤汁包裹着肉块，色泽诱人，加上酸菜甜酸适中，令人胃口大开。这是非常好的下饭菜", 5,
-						24, 20.0,R.drawable.icon_food6));
-		foodInfoList
-				.add(new FoodInfo(true, "地三鲜 ",
-						"肉酥透，肥而不腻，浓卤汁包裹着肉块，色泽诱人，加上酸菜甜酸适中，令人胃口大开。这是非常好的下饭菜", 5,
-						24, 20.0,R.drawable.icon_food7));
-		foodInfoList
-				.add(new FoodInfo(true, "辣炒藕饭 ",
-						"肉酥透，肥而不腻，浓卤汁包裹着肉块，色泽诱人，加上酸菜甜酸适中，令人胃口大开。这是非常好的下饭菜", 5,
-						24, 20.0,R.drawable.icon_food8));
-		foodInfoList
-				.add(new FoodInfo(true, "梅菜扣肉",
-						"肉酥透，肥而不腻，浓卤汁包裹着肉块，色泽诱人，加上酸菜甜酸适中，令人胃口大开。这是非常好的下饭菜", 5,
-						24, 20.0,R.drawable.icon_food9));
-		foodInfoList
-				.add(new FoodInfo(true, "皮蛋豆腐",
-						"肉酥透，肥而不腻，浓卤汁包裹着肉块，色泽诱人，加上酸菜甜酸适中，令人胃口大开。这是非常好的下饭菜", 5,
-						24, 20.0,R.drawable.icon_food10));
-		foodInfoList
-				.add(new FoodInfo(true, "凉拌金针菇",
-						"肉酥透，肥而不腻，浓卤汁包裹着肉块，色泽诱人，加上酸菜甜酸适中，令人胃口大开。这是非常好的下饭菜", 5,
-						24, 20.0,R.drawable.icon_food11));
-		foodInfoList
-				.add(new FoodInfo(true, "鸡翅",
-						"肉酥透，肥而不腻，浓卤汁包裹着肉块，色泽诱人，加上酸菜甜酸适中，令人胃口大开。这是非常好的下饭菜", 5,
-						24, 20.0,R.drawable.icon_food12));
-		mCanteenListViewAdapter.setList(foodInfoList);
 
+		mCanteenListViewAdapter.setList(foodInfoList);
 	}
 
 	private void setData() {

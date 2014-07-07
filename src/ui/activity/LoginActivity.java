@@ -50,7 +50,7 @@ public class LoginActivity extends Activity {
 	private Context mContext;
 	private HttpClient mClient = new DefaultHttpClient();
 	private HttpParams httpParams = mClient.getParams();
-	private static final String HTTPHOST = "http://125.216.247.2:8080/OderService/OderServlet?";
+	public static final String HTTPHOST = "http://125.216.247.2:8080/OderService/OderServlet?";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

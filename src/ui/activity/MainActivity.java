@@ -1,6 +1,23 @@
 package ui.activity;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
@@ -17,6 +34,7 @@ import com.example.canteenorder.R;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
+import data.CanteenInfo;
 import data.CanteenOverlayManager;
 import data.Location;
 
@@ -28,10 +46,12 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -54,6 +74,7 @@ public class MainActivity extends ActionBarActivity {
 	private OverlayItem myLocationItem;
 	private BMapManager mBMapManager = null;
 	private CanteenOverlayManager mCanteenOverlayManager;
+	private List<CanteenInfo> mCanteenList = new ArrayList<CanteenInfo>();
 	// 界面控件
 	private MapView mMapView = null;
 	private ImageButton mTriggerButton;
@@ -77,19 +98,99 @@ public class MainActivity extends ActionBarActivity {
 		((Location) getApplication()).mMapView = mMapView;
 		findView();
 		init();
-		inti_canteen_info_handler.sendEmptyMessage(0);
-		mCanteenOverlayManager = new CanteenOverlayManager(mContext,mMapView);
-		mCanteenOverlayManager.addCanteen(new GeoPoint((int) (23.06202 * 1E6),
-				(int) (113.398128 * 1E6)), R.layout.layout_canteen,R.drawable.icon_canteen1, "73街");
-		
-		mCanteenOverlayManager.addCanteen(new GeoPoint((int) (23.06292 * 1E6),
-				(int) (113.398428 * 1E6)),R.layout.layout_canteen,R.drawable.icon_canteen2,  "台湾牛肉面");
-		
-		mCanteenOverlayManager.addCanteen(new GeoPoint((int) (23.06692 * 1E6),
-				(int) (113.399428 * 1E6)),R.layout.layout_canteen,R.drawable.icon_canteen3, "手工水饺");
-		
-		
+		mCanteenOverlayManager = new CanteenOverlayManager(mContext, mMapView);
+		new Thread() {
+			public void run() {
+				Log.d("lyh", "mLoginButton1");
+				StringBuilder sb = new StringBuilder();
+				HttpClient client = new DefaultHttpClient();
+				HttpParams httpParams = client.getParams();
+				// 璁剧疆缃戠粶瓒呮椂鍙傛暟
+				HttpConnectionParams.setConnectionTimeout(httpParams, 3000);
+				HttpConnectionParams.setSoTimeout(httpParams, 5000);
+				HttpResponse response = null;
+				try {
+					response = client.execute(new HttpGet(
+					LoginActivity.HTTPHOST + "m=json&a=canteenlist"));
+					Log.d("lyh", LoginActivity.HTTPHOST + "m=json&a=canteenlist");
+				} catch (ClientProtocolException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if (response == null) {
+					Log.d("lyh", "response is empty");
+					
+					inti_canteen_info_handler.sendEmptyMessage(0);
+					return;
+				}
+				HttpEntity entity = response.getEntity();
+				Log.d("lyh", "1");
+				if (entity != null) {
+					BufferedReader reader = null;
+					try {
+						reader = new BufferedReader(new InputStreamReader(
+								entity.getContent(), "UTF-8"), 8192);
+					} catch (UnsupportedEncodingException e) {
+						e.printStackTrace();
+					} catch (IllegalStateException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					String line = null;
+					try {
+						while ((line = reader.readLine()) != null) {
+							sb.append(line + "\n");
+						}
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					try {
+						reader.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				String result = sb.toString();
+				Log.d("lyh", result);
+				JSONArray jsonArr = null;
+				try {
+					jsonArr = new JSONArray(sb.toString());
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				//"latitude":23.062000274658203,"longitude":113.39800262451172,"name":"73街","phone":"13584966887"
+				JSONObject obj = null;
+				try {
+					for (int i = 0; i < jsonArr.length(); i++) {
+						obj = jsonArr.getJSONObject(i);
+						CanteenInfo can = new CanteenInfo();
+						can.setName((String) obj.get("name"));
+						can.setPhone((String) obj.get("phone"));
+						can.setLatitude((double) obj.get("latitude"));
+						can.setLongitude((double) obj.get("longitude"));
+						can.setCantteenLoca(new GeoPoint((int) ((double) obj.get("latitude") * 1E6),
+								(int) ((double) obj.get("longitude") * 1E6)));
+						
+						can.setIconResource(R.drawable.icon_canteen1);
+						mCanteenList.add(can);
+					}
+					
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				inti_canteen_info_handler.sendEmptyMessage(0);
+			}
+		}.start();
 	}
+
 
 	@Override
 	public void onBackPressed() {
@@ -156,6 +257,11 @@ public class MainActivity extends ActionBarActivity {
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
 			initMapView();
+			mCanteenOverlayManager = new CanteenOverlayManager(mContext, mMapView);
+			if(mCanteenList.size()>0)
+			mCanteenOverlayManager.addCanteenList(mCanteenList);
+			else
+				Toast.makeText(mContext, "服务器出现问题，请稍后", Toast.LENGTH_LONG).show();
 		}
 	};
 	private Handler handler = new Handler() {

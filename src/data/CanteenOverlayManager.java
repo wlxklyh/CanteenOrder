@@ -55,7 +55,8 @@ public class CanteenOverlayManager {
 		for(int i=0;i<canteenList.size();i++)
 		{
 			OverlayItem tempoverlayItem = new OverlayItem(canteenList.get(i).cantteenLoca, "item1", "item1");
-			canteenOverlayItemList.add(tempoverlayItem);
+			
+			
 			View layoutView = LayoutInflater.from(context).inflate(R.layout.layout_canteen,
 					null);
 			TextView  nameTectView = (TextView)layoutView.findViewById(R.id.canteen_name_text);
@@ -68,6 +69,8 @@ public class CanteenOverlayManager {
 			bm=small(bm);
 			BitmapDrawable bd = new BitmapDrawable(bm);
 			tempoverlayItem.setMarker(bd);
+			
+			canteenOverlayItemList.add(tempoverlayItem);
 		}
 		canteenOverlay.addItem(canteenOverlayItemList);
 		mMapView.refresh();
@@ -133,6 +136,7 @@ public class CanteenOverlayManager {
 			Log.d("lyh","asdf");
 			Intent intent = new Intent();
 			intent.putExtra("name", canteens.get(index).name);
+			intent.putExtra("phone", canteens.get(index).phone);
 			intent.setClass(context,CanteenActivity.class);
 			context.startActivity(intent);
 			return true;
