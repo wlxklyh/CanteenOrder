@@ -56,7 +56,6 @@ public class CanteenOverlayManager {
 		{
 			OverlayItem tempoverlayItem = new OverlayItem(canteenList.get(i).cantteenLoca, "item1", "item1");
 			
-			
 			View layoutView = LayoutInflater.from(context).inflate(R.layout.layout_canteen,
 					null);
 			TextView  nameTectView = (TextView)layoutView.findViewById(R.id.canteen_name_text);
@@ -64,6 +63,9 @@ public class CanteenOverlayManager {
 			
 			ImageView  iconImgeView = (ImageView)layoutView.findViewById(R.id.imageView_canteen_icon);
 			iconImgeView.setBackgroundResource(canteenList.get(i).iconResource);
+			
+			TextView  phoneTectView = (TextView)layoutView.findViewById(R.id.canteen_phone_text);
+			phoneTectView.setText("µç»°£º"+canteenList.get(i).phone);
 			
 			Bitmap bm = convertViewToBitMap(layoutView);
 			bm=small(bm);

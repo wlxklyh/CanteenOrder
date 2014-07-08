@@ -47,12 +47,9 @@ public class CanteenActivity extends Activity {
 	private Context mContext;
 	private ViewPager mAdsViewPager;
 	private ListView mFoodListView;
-
 	private CanteenListViewAdapter mCanteenListViewAdapter;
 	private CanteenViewpagerAdapter mCanteenViewpagerAdapter;
-
 	public static List<FoodInfo> foodInfoList = new ArrayList<FoodInfo>();
-
 	private String mCanteenPhone;
 	private String mTitleStr;
 	@Override
@@ -60,7 +57,8 @@ public class CanteenActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		mContext = this;
 		setContentView(R.layout.activity_canteen);
-
+		foodInfoList.clear();
+		
 		mFoodIconR[0]=R.drawable.icon_food1;
 		mFoodIconR[1]=R.drawable.icon_food2;
 		mFoodIconR[2]=R.drawable.icon_food3;
@@ -74,13 +72,11 @@ public class CanteenActivity extends Activity {
 		mFoodIconR[10]=R.drawable.icon_food11;
 		mFoodIconR[11]=R.drawable.icon_food12;
 		
-		
 		// 进来初始化
 		Intent intent = getIntent();
 		mTitleStr = intent.getStringExtra("name");
 		mCanteenPhone = intent.getStringExtra("phone");
 		mFindViewByID();
-		
 		
 		TextView titleTextView = (TextView) findViewById(R.id.button_title);
 		titleTextView.setText(mTitleStr);
@@ -175,7 +171,6 @@ public class CanteenActivity extends Activity {
 	public Handler inti_food_info_handler = new Handler(){
 		@Override
 		public void handleMessage(Message msg) {
-			
 			initData();
 			setData();
 			
@@ -184,28 +179,7 @@ public class CanteenActivity extends Activity {
 	private void mFindViewByID() {
 		mFoodListView = (ListView) findViewById(R.id.listView_food);
 		mAdsViewPager = (ViewPager) findViewById(R.id.ads_viewpager);
-	}
-
-	private void initData() {
-		mCanteenListViewAdapter = new CanteenListViewAdapter(mContext);
 		mCanteenViewpagerAdapter = new CanteenViewpagerAdapter(mContext);
-
-		mCanteenListViewAdapter.setList(foodInfoList);
-	}
-
-	private void setData() {
-		mFoodListView.setAdapter(mCanteenListViewAdapter);
-		mFoodListView.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
-		
-		
 		mAdsViewPager.setAdapter(mCanteenViewpagerAdapter);
 		mAdsViewPager.setCurrentItem(mCanteenViewpagerAdapter
 				.getStartPosition());
@@ -224,6 +198,23 @@ public class CanteenActivity extends Activity {
 				}
 			}
 		}).start();
+	}
+
+	
+	
+	private void initData() {
+		mCanteenListViewAdapter = new CanteenListViewAdapter(mContext);
+		mCanteenListViewAdapter.setList(foodInfoList);
+	}
+
+	private void setData() {
+		mFoodListView.setAdapter(mCanteenListViewAdapter);
+		mFoodListView.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+			}
+		});
 	}
 
 	public Handler handlerViewPagerMove = new Handler() {

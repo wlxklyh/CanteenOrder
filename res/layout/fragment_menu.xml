@@ -51,9 +51,17 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <RelativeLayout style="@style/menuItem" >
+            <RelativeLayout style="@style/menuItem"
+                >
+
+				<ImageButton
+				    android:id="@+id/imageButton_historyCanteen"
+				    android:layout_width="match_parent"
+				    android:layout_height="match_parent"
+				    android:background="@drawable/menu_item" />
 
                 <ImageView
+                    android:layout_marginLeft="30dp"
                     android:id="@+id/iv_transfer"
                     style="@style/menuItemIcon"
                     android:src="@drawable/icon_transfer" />
@@ -66,7 +74,14 @@
 
             <RelativeLayout style="@style/menuItem" >
 
+                <ImageButton
+                    android:id="@+id/imageButton_historyOrder"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/menu_item" />
+
                 <ImageView
+                    android:layout_marginLeft="30dp"
                     android:id="@+id/iv_history"
                     style="@style/menuItemIcon"
                     android:src="@drawable/icon_history" />
@@ -82,7 +97,14 @@
                 style="@style/menuItem"
                  >
 
+                <ImageButton
+                    android:id="@+id/imageButton_updateVersion"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/menu_item" />
+
                 <ImageView
+                    android:layout_marginLeft="30dp"
                     android:id="@+id/iv_connect"
                     style="@style/menuItemIcon"
                     android:src="@drawable/icon_connect" />
@@ -96,7 +118,14 @@
 
             <RelativeLayout style="@style/menuItem" >
 
+                <ImageButton
+                    android:id="@+id/imageButton_aboutUs"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/menu_item" />
+
                 <ImageView
+                    android:layout_marginLeft="30dp"
                     android:id="@+id/iv_reward"
                     style="@style/menuItemIcon"
                     android:src="@drawable/icon_reward" />
@@ -109,7 +138,14 @@
 
             <RelativeLayout style="@style/menuItem" >
 
+                <ImageButton
+                    android:id="@+id/imageButton_setting"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/menu_item" />
+
                 <ImageView
+                    android:layout_marginLeft="30dp"
                     android:id="@+id/iv_setting"
                     style="@style/menuItemIcon"
                     android:src="@drawable/icon_setting" />
@@ -121,7 +157,14 @@
             </RelativeLayout>
             <RelativeLayout style="@style/menuItem" >
 
+                <ImageButton
+                    android:id="@+id/imageButton_advice"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/menu_item" />
+
                 <ImageView
+                    android:layout_marginLeft="30dp"
                     android:id="@+id/iv_logout"
                     style="@style/menuItemIcon"
                     android:src="@drawable/icon_logout" />

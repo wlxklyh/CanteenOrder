@@ -1,0 +1,55 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#eee"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/rl_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/title_bar_bg" >
+
+        <Button
+            android:id="@+id/ibtn_right_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/btn_title"
+            android:onClick="onClickBack"
+            android:text="返回"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/button_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="@null"
+            android:text="订单详情"
+            android:textColor="@color/white" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/rl_title"
+        android:background="@drawable/item_middle_normal"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/textView_menuContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:text="华南理工大学  计算机科学与工程学院  2011级 计联班 林炎厚 201130480315\n 华南理工大学  计算机科学与工程学院  2011级 计联班 纪秋佳 201130480315\n "
+            android:textColor="@color/font_title" />
+    </ScrollView>
+
+</RelativeLayout>

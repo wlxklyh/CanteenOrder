@@ -41,80 +41,49 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class LoginActivity extends Activity {
-
+	//UI控件
 	private Button mLoginButton;
 	private Button mRegisterButton;
 	private EditText mAccountNameEdt;
 	private EditText mPasswordEdt;
-
+	//http请求用的变量
 	private Context mContext;
 	private HttpClient mClient = new DefaultHttpClient();
 	private HttpParams httpParams = mClient.getParams();
 	public static final String HTTPHOST = "http://125.216.247.2:8080/OderService/OderServlet?";
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 		mContext=this;
-		mRegisterButton = (Button) findViewById(R.id.button_register);
-		mLoginButton = (Button) findViewById(R.id.button_login);
-		mAccountNameEdt = (EditText) findViewById(R.id.editText_accountName);
-		mPasswordEdt = (EditText) findViewById(R.id.editText_password);
-		
-		Log.d("lyh", "asdasdasd");
-		
-		
-		
+		mFindViewByID();
+
 		mLoginButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				Log.d("lyh", "mLoginButton");
 				new Thread() {
 					public void run() {
-						Log.d("lyh", "mLoginButton1");
 						StringBuilder sb = new StringBuilder();
 						HttpClient client = new DefaultHttpClient();
 						HttpParams httpParams = client.getParams();
-						// 璁剧疆缃戠粶瓒呮椂鍙傛暟
 						HttpConnectionParams.setConnectionTimeout(httpParams,
 								3000);
 						HttpConnectionParams.setSoTimeout(httpParams, 5000);
 						HttpResponse response = null;
-						Log.d("lyh", "mLoginButton2");
 						try {
-							Log.d("lyh", "mLoginButton3");
 							String phone = mAccountNameEdt.getText().toString();
-							Log.d("lyh", "mLoginButton4");
 							String password = mPasswordEdt.getText().toString();
-							Log.d("lyh", "mLoginButton5");
-							Log.d("lyh", phone);
-							Log.d("lyh", password);
-							Log.d("lyh", "mLoginButton6");
-							Log.d("lyh", HTTPHOST
-									+ "m=json&a=login&phone=" + phone
-									+ "&password=" + password);
-							
 							response = client.execute(new HttpGet(HTTPHOST
 									+ "m=json&a=login&phone=" + phone
 									+ "&password=" + password));
-							
-							Log.d("lyh", HTTPHOST
-									+ "m=json&a=login&phone=" + phone
-									+ "&password=" + password);
-							
 						} catch (ClientProtocolException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						if(response==null)
 						{
-							Log.d("lyh", "response is empty");
 							Message ms = new Message();
 							Bundle bundle = new Bundle();
 							bundle.putInt("type", 0);
@@ -152,13 +121,9 @@ public class LoginActivity extends Activity {
 								e.printStackTrace();
 							}
 						}
-						Log.d("lyh", "real"+sb.toString()+"a");
 						String result = sb.toString();
-						Log.d("lyh", "result"+result+"a");
-
 						if(result.charAt(0)=='0')
 						{
-							Log.d("lyh", "Handler00000");
 							Message ms = new Message();
 							Bundle bundle = new Bundle();
 							bundle.putInt("type", 0);
@@ -166,7 +131,6 @@ public class LoginActivity extends Activity {
 							handler.sendMessage(ms);
 						}else if(result.charAt(0)=='1')
 						{
-							Log.d("lyh", "Handler111");
 							Message ms = new Message();
 							Bundle bundle = new Bundle();
 							bundle.putInt("type",1);
@@ -179,31 +143,30 @@ public class LoginActivity extends Activity {
 		});
 
 		mRegisterButton.setOnClickListener(new OnClickListener() {
-
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				Log.d("lyh", "mRegisterButton");
+				
 			}
 		});
 	}
 
+	private void mFindViewByID(){
+		mRegisterButton = (Button) findViewById(R.id.button_register);
+		mLoginButton = (Button) findViewById(R.id.button_login);
+		mAccountNameEdt = (EditText) findViewById(R.id.editText_accountName);
+		mPasswordEdt = (EditText) findViewById(R.id.editText_password);
+	}
 	
 	private Handler handler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
 			Bundle bundle = msg.getData();
 			int temp=bundle.getInt("type");
-			Log.d("lyh", "Handler");
-			
-			Log.d("lyh", "Handler"+temp+"a");
 			switch(temp){
 			case 0:
-				Log.d("lyh", "Handler"+temp+"a"); 
 				Toast.makeText(mContext, "用戶名不存在或者密碼錯誤", Toast.LENGTH_LONG).show();
 				break;
 			case 1:
-				Log.d("lyh", "Handler"+temp+"a");
 				Intent intent = new Intent();
 				intent.setClass(mContext,MainActivity.class);
 				startActivity(intent);
@@ -214,38 +177,3 @@ public class LoginActivity extends Activity {
 	};
 }
 
-
-
-// JSONArray jsonArr = null;
-// try {
-// jsonArr = new JSONArray(sb.toString());
-// } catch (JSONException e1) {
-// // TODO Auto-generated catch block
-// e1.printStackTrace();
-// }
-// JSONObject obj = null;
-// try {
-// driverNames = new String[jsonArr.length()];
-// driverStars = new int[jsonArr.length()];
-// driverState = new int[jsonArr.length()];
-// driveringYears = new int[jsonArr.length()];
-// driveringTimes = new int[jsonArr.length()];
-// driverAddress = new String[jsonArr.length()];
-// driverPhoneNumber = new String[jsonArr.length()];
-//
-// for (int i = 0; i < jsonArr.length(); i++) {
-// obj = jsonArr.getJSONObject(i);
-// driverNames[i] = (String) obj.get("sex");
-// driverStars[i] = (Integer) obj.getInt("sex");
-// driverState[i] = (Integer) obj.getInt("sex");
-// driveringYears[i] = (Integer) obj.getInt("sex");
-// driveringTimes[i] = (Integer) obj.getInt("sex");
-// driverAddress[i] = (String) obj.get("sex");
-// driverPhoneNumber[i] = (String) obj.get("sex");
-// }
-//
-// } catch (JSONException e1) {
-// // TODO Auto-generated catch block
-// e1.printStackTrace();
-// }
-// inti_driver_info_handler.sendEmptyMessage(0);

@@ -19,6 +19,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import ui.activity.menuactivity.MenuActivity;
+
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.mapapi.BMapManager;
@@ -40,10 +42,12 @@ import data.Location;
 
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
+import android.support.v7.internal.widget.ActivityChooserModel.HistoricalRecord;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.support.v4.widget.SearchViewCompat.OnCloseListenerCompat;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -67,24 +71,23 @@ import android.widget.Toast;
 import android.os.Build;
 
 public class MainActivity extends ActionBarActivity {
-	public static final String strKey = "63418012748CD126610D926A0546374D0BFC86D5";
-
 	private Context mContext;
+	// 百度地图
+	public static final String strKey = "63418012748CD126610D926A0546374D0BFC86D5";
 	private ItemizedOverlay mItemOverlay;
 	private OverlayItem myLocationItem;
 	private BMapManager mBMapManager = null;
 	private CanteenOverlayManager mCanteenOverlayManager;
 	private List<CanteenInfo> mCanteenList = new ArrayList<CanteenInfo>();
+	private LocationClient mLocClient;
+
 	// 界面控件
 	private MapView mMapView = null;
 	private ImageButton mTriggerButton;
-
-	// 等待对话框
 	private ProgressDialog mLocationProD;
 	private SlidingMenu mSlidingMenu;
 
-	// 定位使用
-	private LocationClient mLocClient;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -96,38 +99,29 @@ public class MainActivity extends ActionBarActivity {
 		mLocClient = ((Location) getApplication()).mLocationClient;
 		((Location) getApplication()).myLocationItem = myLocationItem;
 		((Location) getApplication()).mMapView = mMapView;
-		findView();
-		init();
+		findViewAndInit();
 		mCanteenOverlayManager = new CanteenOverlayManager(mContext, mMapView);
 		new Thread() {
 			public void run() {
-				Log.d("lyh", "mLoginButton1");
 				StringBuilder sb = new StringBuilder();
 				HttpClient client = new DefaultHttpClient();
 				HttpParams httpParams = client.getParams();
-				// 璁剧疆缃戠粶瓒呮椂鍙傛暟
 				HttpConnectionParams.setConnectionTimeout(httpParams, 3000);
 				HttpConnectionParams.setSoTimeout(httpParams, 5000);
 				HttpResponse response = null;
 				try {
 					response = client.execute(new HttpGet(
-					LoginActivity.HTTPHOST + "m=json&a=canteenlist"));
-					Log.d("lyh", LoginActivity.HTTPHOST + "m=json&a=canteenlist");
+							LoginActivity.HTTPHOST + "m=json&a=canteenlist"));
 				} catch (ClientProtocolException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				if (response == null) {
-					Log.d("lyh", "response is empty");
-					
 					inti_canteen_info_handler.sendEmptyMessage(0);
 					return;
 				}
 				HttpEntity entity = response.getEntity();
-				Log.d("lyh", "1");
 				if (entity != null) {
 					BufferedReader reader = null;
 					try {
@@ -146,26 +140,21 @@ public class MainActivity extends ActionBarActivity {
 							sb.append(line + "\n");
 						}
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					try {
 						reader.close();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
 				String result = sb.toString();
-				Log.d("lyh", result);
 				JSONArray jsonArr = null;
 				try {
 					jsonArr = new JSONArray(sb.toString());
 				} catch (JSONException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				//"latitude":23.062000274658203,"longitude":113.39800262451172,"name":"73街","phone":"13584966887"
 				JSONObject obj = null;
 				try {
 					for (int i = 0; i < jsonArr.length(); i++) {
@@ -175,13 +164,13 @@ public class MainActivity extends ActionBarActivity {
 						can.setPhone((String) obj.get("phone"));
 						can.setLatitude((double) obj.get("latitude"));
 						can.setLongitude((double) obj.get("longitude"));
-						can.setCantteenLoca(new GeoPoint((int) ((double) obj.get("latitude") * 1E6),
-								(int) ((double) obj.get("longitude") * 1E6)));
-						
+						can.setCantteenLoca(new GeoPoint((int) ((double) obj
+								.get("latitude") * 1E6), (int) ((double) obj
+								.get("longitude") * 1E6)));
 						can.setIconResource(R.drawable.icon_canteen1);
 						mCanteenList.add(can);
 					}
-					
+
 				} catch (JSONException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -190,7 +179,6 @@ public class MainActivity extends ActionBarActivity {
 			}
 		}.start();
 	}
-
 
 	@Override
 	public void onBackPressed() {
@@ -257,19 +245,19 @@ public class MainActivity extends ActionBarActivity {
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
 			initMapView();
-			mCanteenOverlayManager = new CanteenOverlayManager(mContext, mMapView);
-			if(mCanteenList.size()>0)
-			mCanteenOverlayManager.addCanteenList(mCanteenList);
+			mCanteenOverlayManager = new CanteenOverlayManager(mContext,
+					mMapView);
+			if (mCanteenList.size() > 0)
+				mCanteenOverlayManager.addCanteenList(mCanteenList);
 			else
-				Toast.makeText(mContext, "服务器出现问题，请稍后", Toast.LENGTH_LONG).show();
+				Toast.makeText(mContext, "服务器出现问题，请稍后", Toast.LENGTH_LONG)
+						.show();
 		}
 	};
 	private Handler handler = new Handler() {
 		@Override
-		// 当有消息发送出来的时候就执行Handler的这个方法
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
-			// 只要执行到这里就关闭对话框
 			if (mLocationProD != null)
 				mLocationProD.dismiss();
 		}
@@ -286,8 +274,9 @@ public class MainActivity extends ActionBarActivity {
 		mMapController.setZoom(17);
 	}
 
-	private void findView() {
+	private void findViewAndInit() {
 		mTriggerButton = (ImageButton) findViewById(R.id.ibtn_right_menu);
+		init();
 	}
 
 	public void initEngineManager(Context context) {
@@ -348,7 +337,6 @@ public class MainActivity extends ActionBarActivity {
 		mLocClient.setLocOption(option);
 	}
 
-	// 常用事件监听，用来处理通常的网络错误，授权验证错误等
 	class MyGeneralListener implements MKGeneralListener {
 		@Override
 		public void onGetNetworkState(int iError) {
@@ -363,7 +351,6 @@ public class MainActivity extends ActionBarActivity {
 		@Override
 		public void onGetPermissionState(int iError) {
 			if (iError == MKEvent.ERROR_PERMISSION_DENIED) {
-				// 授权Key错误：
 				Toast.makeText(mContext,
 						"请在 DemoApplication.java文件输入正确的授权Key！",
 						Toast.LENGTH_LONG).show();
