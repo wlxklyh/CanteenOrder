@@ -5,12 +5,12 @@ import com.example.canteenorder.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 public class MenuActivity extends Activity {
-
 	private Button mTitleButton;
 	private TextView mContentTextView;
 	@Override
@@ -18,11 +18,14 @@ public class MenuActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_menu);
+		
 		mTitleButton = (Button)findViewById(R.id.button_title);
-		mContentTextView = (TextView)findViewById(R.id.textView_content);
+		mContentTextView = (TextView)findViewById(R.id.textView_menuContent);
 		
 		Intent intent = getIntent();
 		int temp = intent.getIntExtra("type",0);
+		
+		Log.d("lyh", "jinru"+temp);
 		switch(temp){
 			case 0:
 				mTitleButton.setText("历史餐厅");
@@ -38,7 +41,7 @@ public class MenuActivity extends Activity {
 				break;
 			case 3:
 				mTitleButton.setText("关于我们");
-				mContentTextView.setText("华南理工大学  计算机科学与工程学院  2011级 计联班 林炎厚 201130480315\n 华南理工大学  计算机科学与工程学院  2011级 计联班 纪秋佳 201130480315\n ");
+				mContentTextView.setText("华南理工大学  计算机科学与工程学院  2011级 计联班 林炎厚 201130480315\n 华南理工大学  计算机科学与工程学院  2011级 计联班 纪秋佳 201130010451\n ");
 				break;
 			case 4:
 				mTitleButton.setText("设置");

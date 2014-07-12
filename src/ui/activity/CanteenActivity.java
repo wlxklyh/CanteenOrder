@@ -234,11 +234,15 @@ public class CanteenActivity extends Activity {
 		Intent intent = new Intent();
 		intent.setClass(CanteenActivity.this,OderInfoActivity.class);
 		String value = "订单：";
+		double total = 0.0;
 		for(int i=0;i<foodInfoList.size();i++){
 			if(foodInfoList.get(i).oderNum>0){
 				value+="\n"+foodInfoList.get(i).oderNum+"份"+foodInfoList.get(i).name;
+				total+=foodInfoList.get(i).oderNum*foodInfoList.get(i).price;
 			}
 		}
+		value+="\n"+"一共:\n"+total+"元";
+		value+="\n\n"+"十分钟后会有人送来.\n你的号码是："+MainActivity.sAccountPhone;
 		intent.putExtra("content", value);
 		startActivity(intent);
 	}

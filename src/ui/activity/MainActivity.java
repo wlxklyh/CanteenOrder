@@ -87,13 +87,16 @@ public class MainActivity extends ActionBarActivity {
 	private ProgressDialog mLocationProD;
 	private SlidingMenu mSlidingMenu;
 
-
+	public static String sAccountPhone="13570233448";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mContext = this;
 		initEngineManager(this);
+		Intent intent = getIntent();
+		sAccountPhone = intent.getStringExtra("accountPhone");
+		if(sAccountPhone==null)sAccountPhone="13570233448";
 		setContentView(R.layout.activity_main);
 		mMapView = (MapView) findViewById(R.id.bmapView);
 		mLocClient = ((Location) getApplication()).mLocationClient;
@@ -101,85 +104,86 @@ public class MainActivity extends ActionBarActivity {
 		((Location) getApplication()).mMapView = mMapView;
 		findViewAndInit();
 		mCanteenOverlayManager = new CanteenOverlayManager(mContext, mMapView);
-		new Thread() {
-			public void run() {
-				StringBuilder sb = new StringBuilder();
-				HttpClient client = new DefaultHttpClient();
-				HttpParams httpParams = client.getParams();
-				HttpConnectionParams.setConnectionTimeout(httpParams, 3000);
-				HttpConnectionParams.setSoTimeout(httpParams, 5000);
-				HttpResponse response = null;
+		new GetCantenListThread().start();
+	}
+
+	private class GetCantenListThread extends Thread {
+		public void run() {
+			StringBuilder sb = new StringBuilder();
+			HttpClient client = new DefaultHttpClient();
+			HttpParams httpParams = client.getParams();
+			HttpConnectionParams.setConnectionTimeout(httpParams, 3000);
+			HttpConnectionParams.setSoTimeout(httpParams, 5000);
+			HttpResponse response = null;
+			try {
+				response = client.execute(new HttpGet(
+						LoginActivity.HTTPHOST + "m=json&a=canteenlist"));
+			} catch (ClientProtocolException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			if (response == null) {
+				inti_canteen_info_handler.sendEmptyMessage(0);
+				return;
+			}
+			HttpEntity entity = response.getEntity();
+			if (entity != null) {
+				BufferedReader reader = null;
 				try {
-					response = client.execute(new HttpGet(
-							LoginActivity.HTTPHOST + "m=json&a=canteenlist"));
-				} catch (ClientProtocolException e) {
+					reader = new BufferedReader(new InputStreamReader(
+							entity.getContent(), "UTF-8"), 8192);
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				} catch (IllegalStateException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				if (response == null) {
-					inti_canteen_info_handler.sendEmptyMessage(0);
-					return;
-				}
-				HttpEntity entity = response.getEntity();
-				if (entity != null) {
-					BufferedReader reader = null;
-					try {
-						reader = new BufferedReader(new InputStreamReader(
-								entity.getContent(), "UTF-8"), 8192);
-					} catch (UnsupportedEncodingException e) {
-						e.printStackTrace();
-					} catch (IllegalStateException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					String line = null;
-					try {
-						while ((line = reader.readLine()) != null) {
-							sb.append(line + "\n");
-						}
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					try {
-						reader.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-				String result = sb.toString();
-				JSONArray jsonArr = null;
+				String line = null;
 				try {
-					jsonArr = new JSONArray(sb.toString());
-				} catch (JSONException e1) {
-					e1.printStackTrace();
-				}
-				JSONObject obj = null;
-				try {
-					for (int i = 0; i < jsonArr.length(); i++) {
-						obj = jsonArr.getJSONObject(i);
-						CanteenInfo can = new CanteenInfo();
-						can.setName((String) obj.get("name"));
-						can.setPhone((String) obj.get("phone"));
-						can.setLatitude((double) obj.get("latitude"));
-						can.setLongitude((double) obj.get("longitude"));
-						can.setCantteenLoca(new GeoPoint((int) ((double) obj
-								.get("latitude") * 1E6), (int) ((double) obj
-								.get("longitude") * 1E6)));
-						can.setIconResource(R.drawable.icon_canteen1);
-						mCanteenList.add(can);
+					while ((line = reader.readLine()) != null) {
+						sb.append(line + "\n");
 					}
-
-				} catch (JSONException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
-				inti_canteen_info_handler.sendEmptyMessage(0);
+				try {
+					reader.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
-		}.start();
-	}
+			String result = sb.toString();
+			JSONArray jsonArr = null;
+			try {
+				jsonArr = new JSONArray(sb.toString());
+			} catch (JSONException e1) {
+				e1.printStackTrace();
+			}
+			JSONObject obj = null;
+			try {
+				for (int i = 0; i < jsonArr.length(); i++) {
+					obj = jsonArr.getJSONObject(i);
+					CanteenInfo can = new CanteenInfo();
+					can.setName((String) obj.get("name"));
+					can.setPhone((String) obj.get("phone"));
+					can.setLatitude((double) obj.get("latitude"));
+					can.setLongitude((double) obj.get("longitude"));
+					can.setCantteenLoca(new GeoPoint((int) ((double) obj
+							.get("latitude") * 1E6), (int) ((double) obj
+							.get("longitude") * 1E6)));
+					can.setIconResource(R.drawable.icon_canteen1);
+					mCanteenList.add(can);
+				}
 
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			inti_canteen_info_handler.sendEmptyMessage(0);
+		}
+	};
 	@Override
 	public void onBackPressed() {
 		if (mSlidingMenu != null && mSlidingMenu.isMenuShowing()) {
@@ -311,15 +315,19 @@ public class MainActivity extends ActionBarActivity {
 
 	public void location(View v) {
 		// 构建一个下载进度条
+		Log.d("lyh","start location");
 		mLocationProD = ProgressDialog.show(this, "定位", "正在定位，请稍等…");
+		Log.d("lyh","start getCantenListThread");
+		
+
 		new Thread() {
 			public void run() {
 				try {
 					sleep(500);
+					new GetCantenListThread().start();
 					setLocationOption();
 					mLocClient.start();
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				handler.sendEmptyMessage(0);

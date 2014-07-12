@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
@@ -46,6 +48,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class OderInfoActivity extends Activity {
+	
+	private String mContentStr;
+	public static String OrderID;
 	private Button mSureButton;
 	private Context mContext;
 	private JSONArray mOrderJsonArray=new JSONArray();   
@@ -59,6 +64,9 @@ public class OderInfoActivity extends Activity {
 		Intent intent = getIntent();
 		String str = intent.getStringExtra("content");
 		text.setText(str);
+		mContentStr=str;
+		Calendar now =Calendar.getInstance(); 
+		OrderID = ""+now.getTimeInMillis();
 		
 		int numOfFood = CanteenActivity.foodInfoList.size();
 		for(int i=0;i<numOfFood;i++){
@@ -66,7 +74,11 @@ public class OderInfoActivity extends Activity {
 			try {
 				temp.put("canteenPhone", CanteenActivity.foodInfoList.get(i).canteenPhone);
 				temp.put("foodId", CanteenActivity.foodInfoList.get(i).foodId);
-				temp.put("oderNum", CanteenActivity.foodInfoList.get(i).oderNum);
+				temp.put("orderNum", CanteenActivity.foodInfoList.get(i).oderNum);
+				temp.put("orderId", OrderID);
+				Log.d("lyh", " MainActivity.sAccountPhone"+ MainActivity.sAccountPhone);
+				temp.put("accountPhone", MainActivity.sAccountPhone);
+				Log.d("lyh", ""+temp);
 			} catch (JSONException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -104,11 +116,10 @@ public class OderInfoActivity extends Activity {
 						Log.d("lyh", "asdsad2");
 						try {
 							Log.d("lyh", "asdsad2");
-							List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>(); 
+							List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>();
 							nameValuePair.add(new BasicNameValuePair("m", "json"));
 							nameValuePair.add(new BasicNameValuePair("a", "order"));
 							nameValuePair.add(new BasicNameValuePair("jsonString", tempJsonStr));
-							Log.d("lyh", LoginActivity.HTTPHOST+"m=json&"+"a=order&"+"jsonString="+ URLEncodedUtils.format(nameValuePair,HTTP.UTF_8));
 				            HttpPost httpGet = new HttpPost(LoginActivity.HTTPHOST);//"m=json&"+"a=order&"+"jsonString="+ URLEncodedUtils.format(nameValuePair,HTTP.UTF_8) );
 				            httpGet.setEntity(new UrlEncodedFormEntity(nameValuePair,HTTP.UTF_8));
 							response = client.execute(httpGet);

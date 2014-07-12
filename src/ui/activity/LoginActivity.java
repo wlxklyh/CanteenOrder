@@ -88,7 +88,7 @@ public class LoginActivity extends Activity {
 							Bundle bundle = new Bundle();
 							bundle.putInt("type", 0);
 							ms.setData(bundle);
-							handler.sendMessage(ms);
+							handlerLogin.sendMessage(ms);
 							return ;
 						}
 						HttpEntity entity = response.getEntity();
@@ -128,14 +128,14 @@ public class LoginActivity extends Activity {
 							Bundle bundle = new Bundle();
 							bundle.putInt("type", 0);
 							ms.setData(bundle);
-							handler.sendMessage(ms);
+							handlerLogin.sendMessage(ms);
 						}else if(result.charAt(0)=='1')
 						{
 							Message ms = new Message();
 							Bundle bundle = new Bundle();
 							bundle.putInt("type",1);
 							ms.setData(bundle);
-							handler.sendMessage(ms);
+							handlerLogin.sendMessage(ms);
 						}
 					}
 				}.start();
@@ -145,7 +145,84 @@ public class LoginActivity extends Activity {
 		mRegisterButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				
+				new Thread() {
+					public void run() {
+						StringBuilder sb = new StringBuilder();
+						HttpClient client = new DefaultHttpClient();
+						HttpParams httpParams = client.getParams();
+						HttpConnectionParams.setConnectionTimeout(httpParams,
+								3000);
+						HttpConnectionParams.setSoTimeout(httpParams, 5000);
+						HttpResponse response = null;
+						try {
+							String phone = mAccountNameEdt.getText().toString();
+							String password = mPasswordEdt.getText().toString();
+							response = client.execute(new HttpGet(HTTPHOST
+									+ "m=json&a=register&phone=" + phone
+									+ "&password=" + password));
+						} catch (ClientProtocolException e) {
+							e.printStackTrace();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						if(response==null)
+						{
+							Message ms = new Message();
+							Bundle bundle = new Bundle();
+							bundle.putInt("type",2);
+							ms.setData(bundle);
+							handlerRegister.sendMessage(ms);
+							
+							return ;
+						}
+						HttpEntity entity = response.getEntity();
+						if (entity != null) {
+							BufferedReader reader = null;
+							try {
+								reader = new BufferedReader(
+										new InputStreamReader(entity
+												.getContent(), "UTF-8"), 8192);
+							} catch (UnsupportedEncodingException e) {
+								e.printStackTrace();
+							} catch (IllegalStateException e) {
+								e.printStackTrace();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+							String line = null;
+							try {
+								while ((line = reader.readLine()) != null) {
+									sb.append(line + "\n");
+								}
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							try {
+								reader.close();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+						String result = sb.toString();
+						if(result.charAt(0)=='0')
+						{
+							Message ms = new Message();
+							Bundle bundle = new Bundle();
+							bundle.putInt("type", 0);
+							ms.setData(bundle);
+							handlerRegister.sendMessage(ms);
+						}else if(result.charAt(0)=='1')
+						{
+							Message ms = new Message();
+							Bundle bundle = new Bundle();
+							bundle.putInt("type",1);
+							ms.setData(bundle);
+							handlerRegister.sendMessage(ms);
+						}
+					}
+				}.start();
 			}
 		});
 	}
@@ -157,7 +234,7 @@ public class LoginActivity extends Activity {
 		mPasswordEdt = (EditText) findViewById(R.id.editText_password);
 	}
 	
-	private Handler handler = new Handler() {
+	private Handler handlerLogin = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
 			Bundle bundle = msg.getData();
@@ -168,8 +245,33 @@ public class LoginActivity extends Activity {
 				break;
 			case 1:
 				Intent intent = new Intent();
+				intent.putExtra("accountPhone", mAccountNameEdt.getText().toString());
 				intent.setClass(mContext,MainActivity.class);
 				startActivity(intent);
+				break;
+				
+			}
+		}
+	};
+	
+	private Handler handlerRegister = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			Bundle bundle = msg.getData();
+			int temp=bundle.getInt("type");
+			switch(temp){
+			case 0:
+				Toast.makeText(mContext, "这个手机号码被使用了", Toast.LENGTH_LONG).show();
+				break;
+			case 1:
+				Toast.makeText(mContext, "成功注册！！！", Toast.LENGTH_LONG).show();
+				Intent intent = new Intent();
+				intent.putExtra("accountPhone", mAccountNameEdt.getText().toString());
+				intent.setClass(mContext,MainActivity.class);
+				startActivity(intent);
+				break;
+			case 2:
+				Toast.makeText(mContext, "服务器正忙", Toast.LENGTH_LONG).show();
 				break;
 			}
 
