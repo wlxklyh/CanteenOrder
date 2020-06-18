@@ -1,7 +1,5 @@
-CanteenOrder
+# CanteenOrder
+某个课程大作业
+工程客户端 用安卓写的  json传输  httpclient 封装的http协议
 
-OderService 工程客户端 用安卓写的  jso传输  httpclient 封装的http协议
 
-============
-
-About order th food,this is the android project
